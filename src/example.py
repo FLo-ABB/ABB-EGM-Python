@@ -7,7 +7,7 @@ def main() -> None:
     while True:
         success, state = egm.receive_from_robot()
         if success:
-            egm.debug_print_robot_message(state.robot_message)
+            print(state.cartesian.pos.x, state.cartesian.pos.y, state.cartesian.pos.z)
 
 
 if __name__ == "__main__":
