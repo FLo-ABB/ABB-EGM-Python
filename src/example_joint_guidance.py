@@ -1,7 +1,8 @@
 from egm import EGM
 
-# Robot Module :
-
+# Robot Module #
+# First execute the following code in RobotStudio and then run the python code before the waittime ends.
+# The robot will move the first joint by 1 degree until the end of the waittime.
 # MODULE MainModule
 #     VAR egmident egmID1;
 #     VAR egmstate egmSt1;

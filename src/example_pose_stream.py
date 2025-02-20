@@ -1,5 +1,24 @@
 from egm import EGM
-from abb_data import Pos, Orientation, Euler, Pose
+
+# Robot Module #
+# First execute the following code in RobotStudio and then run the python code.
+# MODULE Module1
+#     VAR egmident egmID1;
+#     VAR num count:=0;
+
+#     PROC main()
+#         ! EGM Datastream
+#         EGMGetId egmID1;
+#         EGMSetupUC ROB_1,egmID1,"default","UCdevice"\Pose;
+#         EGMActPose egmID1\StreamStart\Tool:=tool0\WObj:=wobj0\DataToSensor:=DnumOutData,\DataFromSensor:=DnumInData,pose0,EGM_FRAME_WOBJ,pose0,EGM_FRAME_WOBJ;
+#         WHILE count<10 DO
+#             Incr count;
+#             MoveAbsJ [[0,0,0,0,30,0],[9E9,9E9,9E9,9E9,9E9,9E9]]\NoEOffs,v1000,fine,tool0\WObj:=wobj0;
+#             MoveAbsJ [[90,0,0,0,30,0],[9E9,9E9,9E9,9E9,9E9,9E9]]\NoEOffs,v1000,fine,tool0\WObj:=wobj0;
+#         ENDWHILE
+#         EGMStop egmID1,EGM_STOP_HOLD;
+#     ENDPROC
+# ENDMODULE
 
 
 def main() -> None:
@@ -9,15 +28,9 @@ def main() -> None:
         success, state = egm.receive_from_robot()
         if success:
             print(state.cartesian.pos.x, state.cartesian.pos.y, state.cartesian.pos.z)
-            # Move joint 1 by 1 degree
-            joint_angles = state.joint_angles.copy()
-            joint_angles[0] -= 1
-
-            # Create a new EGMRobotState instance with the updated joint_angles
-            new_state = state._replace(joint_angles=joint_angles)
-
-            # Extract joint_angles from the new_state and send to robot
-            egm.send_to_robot(new_state.joint_angles)
+        else:
+            print("Failed to receive from robot")
+            break
 
 
 if __name__ == "__main__":
