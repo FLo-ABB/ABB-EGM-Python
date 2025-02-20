@@ -236,20 +236,44 @@ class EGM:
         """
         print(robot_message)
 
-    def send_to_robot(self, joint_angles: np.array, speed_ref: np.array = None, external_joints: np.array = None,
+    def send_to_robot(self, joint_angles: Optional[np.array] = None,
+                      cartesian: Optional[Tuple[np.ndarray, np.ndarray]] = None,
+                      speed_ref: np.array = None, external_joints: np.array = None,
                       external_joints_speed: np.array = None, rapid_to_robot: np.array = None) -> bool:
         """
-        Send a joint command to robot. Returns False if no data has been received from the robot yet. The EGM
-        operation must have been started with EGMActJoint and EGMRunJoint.
+        Send a command to robot. Returns False if no data has been received from the robot yet.
+        Either joint_angles or cartesian must be provided.
 
         :param joint_angles: Joint angle command in degrees
+        :param cartesian: Tuple of (position, orientation) where:
+                        - position is [x,y,z] in millimeters
+                        - orientation is quaternion [w,x,y,z]
+        :param speed_ref: Speed reference for the joints
+        :param external_joints: External joints positions
+        :param external_joints_speed: External joints speed reference
+        :param rapid_to_robot: RAPID data to send to robot
         :return: True if successful, False if no data received from robot yet
         """
         if not self.egm_addr:
             return False
 
+        # if joint_angles is None and cartesian is None:
+        #     raise ValueError("Either joint_angles or cartesian must be provided")
+
         self.send_sequence_number += 1
-        sensor_message = self._create_sensor_message(joint_angles, speed_ref, external_joints, external_joints_speed, rapid_to_robot)
+
+        if cartesian is not None:
+            # If cartesian is provided, use cartesian control
+            pos, orient = cartesian
+            sensor_message = self._create_sensor_message_cart(
+                pos, orient, speed_ref, external_joints, external_joints_speed, rapid_to_robot
+            )
+        else:
+            # Use joint control
+            sensor_message = self._create_sensor_message(
+                joint_angles, speed_ref, external_joints, external_joints_speed, rapid_to_robot
+            )
+
         return self._send_message(sensor_message)
 
     def _create_sensor_message(self, joint_angles: np.array, speed_ref: np.array, external_joints: np.array,
