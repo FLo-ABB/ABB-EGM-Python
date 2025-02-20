@@ -180,7 +180,7 @@ class EGM:
             cart_p = robot_message.planned.cartesian.pos
             cart_q = robot_message.planned.cartesian.orient
             return Pose(
-                pos=Pose(cart_p.x, cart_p.y, cart_p.z),
+                pos=Pos(cart_p.x, cart_p.y, cart_p.z),
                 orient=Orientation(cart_q.u0, cart_q.u1, cart_q.u2, cart_q.u3),
                 euler=Euler(0, 0, 0)  # Assuming Euler angles are not provided in the message
             )
@@ -265,21 +265,35 @@ class EGM:
         speed_ref_message = sensor_message.speedRef
 
         if joint_angles is not None:
-            planned.joints.joints.extend(list(np.array(joint_angles)))
+            print(joint_angles)
+            joint_angles = self._flatten_and_convert_to_list(joint_angles)
+            planned.joints.joints.extend(joint_angles)
 
         if speed_ref is not None:
-            speed_ref_message.joints.joints.extend(list(np.array(speed_ref)))
+            speed_ref = self._flatten_and_convert_to_list(speed_ref)
+            speed_ref_message.joints.joints.extend(speed_ref)
 
         if external_joints is not None:
-            planned.externalJoints.joints.extend(list(np.array(external_joints)))
+            external_joints = self._flatten_and_convert_to_list(external_joints)
+            planned.externalJoints.joints.extend(external_joints)
 
         if external_joints_speed is not None:
-            speed_ref_message.externalJoints.joints.extend(list(np.array(external_joints_speed)))
+            external_joints_speed = self._flatten_and_convert_to_list(external_joints_speed)
+            speed_ref_message.externalJoints.joints.extend(external_joints_speed)
 
         if rapid_to_robot is not None:
-            sensor_message.RAPIDtoRobot.dnum.extend(list(np.array(rapid_to_robot)))
+            rapid_to_robot = self._flatten_and_convert_to_list(rapid_to_robot)
+            sensor_message.RAPIDtoRobot.dnum.extend(rapid_to_robot)
 
         return sensor_message
+
+    def _flatten_and_convert_to_list(self, array: np.array) -> list:
+        """Flatten the array and convert it to a list, ensuring homogeneous shape."""
+        try:
+            array = np.asarray(array, dtype=np.float64).flatten()
+        except ValueError:
+            raise ValueError("Input array has an inhomogeneous shape or contains non-numeric elements.")
+        return array.tolist()
 
     def _send_message(self, message: Any) -> bool:
         """Send the serialized message to the robot."""

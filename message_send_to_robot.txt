@@ -1,0 +1,177 @@
+EGMRobotState(joint_angles=array([ 3.51891365e+01, -2.32021138e-03, -2.53730803e-04,  1.44118593e-16,
+        3.00001030e+01, -1.39352611e-15]), rapid_running=True, motors_on=True, robot_message=header {
+  seqno: 2808
+  tm: 898259
+  mtype: MSGTYPE_DATA
+}
+feedBack {
+  joints {
+    joints: 36.189136505126953
+    joints: -0.0023202113807201385
+    joints: -0.00025373080279678106
+    joints: 1.4411859286415034e-16
+    joints: 30.000102996826172
+    joints: -1.3935261110868029e-15
+  }
+  cartesian {
+    pos {
+      x: 1352.3692626953125
+      y: 989.3909912109375
+      z: 2166.060791015625
+    }
+    orient {
+      u0: 0.47529032826423645
+      u1: -0.26897227764129639
+      u2: 0.82318603992462158
+      u3: 0.15529894828796387
+    }
+    euler {
+      x: 180.00000500895632
+      y: 60.002467367942486
+      z: -143.81086240866907
+    }
+  }
+  time {
+    sec: 898
+    usec: 256901
+  }
+  timeStamp {
+    sec: 898
+    nsec: 256902001
+  }
+}
+planned {
+  joints {
+    joints: 34.39691162109375
+    joints: 0
+    joints: -0
+    joints: 0
+    joints: 30.000001907348633
+    joints: -0
+  }
+  cartesian {
+    pos {
+      x: 1382.697998046875
+      y: 946.6435546875
+      z: 2166.000244140625
+    }
+    orient {
+      u0: 0.47764316201210022
+      u1: -0.25606837868690491
+      u2: 0.82730221748352051
+      u3: 0.14784115552902222
+    }
+    euler {
+      x: 180.00000500895632
+      y: 60.000001669652114
+      z: -145.60309038650209
+    }
+  }
+  time {
+    sec: 898
+    usec: 311395
+  }
+  timeStamp {
+    sec: 898
+    nsec: 311397001
+  }
+}
+motorState {
+  state: MOTORS_ON
+}
+mciState {
+  state: MCI_STOPPED
+}
+mciConvergenceMet: false
+testSignals {
+  signals: 0.8648993968963623
+  signals: 0.89844691753387451
+  signals: 0.88396143913269043
+  signals: 0.984158992767334
+  signals: 0.99143344163894653
+  signals: 1
+}
+rapidExecState {
+  state: RAPID_RUNNING
+}
+measuredForce {
+  force: 0
+  force: 0
+  force: 0
+  force: 0
+  force: 0
+  force: 0
+}
+utilizationRate: 17.3
+moveIndex: 342
+CollisionInfo {
+  collsionTriggered: false
+  collDetQuota: 0
+  collDetQuota: 0
+  collDetQuota: 0
+  collDetQuota: 0
+  collDetQuota: 0
+  collDetQuota: 0
+}
+RAPIDfromRobot {
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+  dnum: 3
+}
+torqueRef {
+  joints: 0
+  joints: 0
+  joints: 0
+  joints: 0
+  joints: 0
+  joints: 0
+}
+, cartesian=Pose(pos=Pos(x=1352.3692626953125, y=989.3909912109375, z=2166.060791015625), orient=Orientation(u0=0.47529032826423645, u1=-0.2689722776412964, u2=0.8231860399246216, u3=0.15529894828796387), euler=Euler(rx=0, ry=0, rz=0)), joint_angles_planned=array([34.39691162,  0.        , -0.        ,  0.        , 30.00000191,
+       -0.        ]), cartesian_planned=Pose(pos=Pos(x=1382.697998046875, y=946.6435546875, z=2166.000244140625), orient=Orientation(u0=0.4776431620121002, u1=-0.2560683786869049, u2=0.8273022174835205, u3=0.14784115552902222), euler=Euler(rx=0, ry=0, rz=0)), external_axes=array([], dtype=float64), external_axes_planned=array([], dtype=float64), measured_force=array([0., 0., 0., 0., 0., 0.]), move_index=342, rapid_from_robot=array([3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3.,
+       3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3., 3.,
+       3., 3., 3., 3., 3., 3.]), mci_state=2, mci_convergence_met=False, test_signals=array([0.8648994 , 0.89844692, 0.88396144, 0.98415899, 0.99143344,
+       1.        ]), utilization_rate=17.3, collision_info=collsionTriggered: false
+collDetQuota: 0
+collDetQuota: 0
+collDetQuota: 0
+collDetQuota: 0
+collDetQuota: 0
+collDetQuota: 0
+)
