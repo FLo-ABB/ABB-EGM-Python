@@ -5,7 +5,7 @@ from egm import EGM
 # MODULE Module1
 #     VAR egmident egmID1;
 #     VAR num count:=0;
-
+#     CONST pose pose0:=[[0,0,0],[1,0,0,0]];
 #     PROC main()
 #         ! EGM Datastream
 #         EGMGetId egmID1;
