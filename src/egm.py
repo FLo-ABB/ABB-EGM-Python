@@ -265,7 +265,7 @@ class EGM:
         speed_ref_message = sensor_message.speedRef
 
         if joint_angles is not None:
-            print(joint_angles)
+            # print(joint_angles)
             joint_angles = self._flatten_and_convert_to_list(joint_angles)
             planned.joints.joints.extend(joint_angles)
 
