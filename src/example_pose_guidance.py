@@ -44,7 +44,7 @@ def main() -> None:
 
             # Move 1mm in x direction
             new_pos = current_pos.copy()
-            new_pos[0] += 1.0  # x + 1mm
+            new_pos[0] += 100.0  # x + 1mm
 
             # Send new position while maintaining current orientation
             egm.send_to_robot(cartesian=(new_pos, current_orient))
