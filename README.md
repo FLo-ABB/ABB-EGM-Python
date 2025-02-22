@@ -14,7 +14,7 @@ A Python library for interfacing with ABB robots using Externally Guided Motion 
   ```
 
 ## Documentation
-Please refer to the [documentation](link to put) for detailed information on EGM option.
+Please refer to the [documentation](ttps://github.com/FLo-ABB/ABB-EGM-Python/blob/main/doc/3HAC073318%20AM%20Externally%20Guided%20Motion%20RW7-en.pdfh) for detailed information on EGM option.
 
 ## Installation
 
@@ -52,7 +52,7 @@ example_table.py - Demonstrates exchanging data arrays with the robot
 ## Complex Scenario
 Example of a more complex scenario where the robot is scanning a surface giving in real time its tool center point position and correlating with a sensor reading. Rspag and python code available in *"scenario scan"* folder.
 
-[![Simulation Video](link)]
+[![Simulation Video](ttps://github.com/FLo-ABB/ABB-EGM-Python/blob/main/scenario_scan/video/scan_scenario.mp4)]
 
 ## Features
 
