@@ -1,15 +1,16 @@
-from abb_egm.egm import EGM
+from ABBRobotEGM import EGM
 
+# Robot Module #
 # MODULE MainModule
 #     VAR egmident egmID1;
 #     VAR num count:=0;
-#     CONST pose pose0:=[[0,0,0],[1,0,0,0]];
 
 #     PROC main()
-#         ! EGM Datastream
+#         EGMReset egmID1;
 #         EGMGetId egmID1;
-#         EGMSetupUC ROB_1,egmID1,"default","UCdevice"\pose;
-#         EGMActPose egmID1\StreamStart\Tool:=tool0\WObj:=wobj0,pose0,EGM_FRAME_WOBJ,pose0,EGM_FRAME_WOBJ;
+#         EGMSetupUC ROB_1,egmID1,"default","UCdevice"\Joint;
+#         EGMActJoint egmID1;
+#         EGMActJoint egmID1\StreamStart;
 #         WHILE count<10 DO
 #             Incr count;
 #             MoveAbsJ [[0,0,0,0,30,0],[9E9,9E9,9E9,9E9,9E9,9E9]]\NoEOffs,v1000,fine,tool0\WObj:=wobj0;
@@ -31,7 +32,7 @@ def main() -> None:
             if not success:
                 print("Failed to receive from robot")
                 break
-            print(f"{state.clock[1]}, {state.cartesian.pos.x}, {state.cartesian.pos.y}, {state.cartesian.pos.z}")
+            print(f"{state.clock[1]}, {state.joint_angles[0]}, {state.joint_angles[1]}, {state.joint_angles[2]}, {state.joint_angles[3]}, {state.joint_angles[4]}, {state.joint_angles[5]}")
 
 
 if __name__ == "__main__":

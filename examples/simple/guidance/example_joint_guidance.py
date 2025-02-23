@@ -1,4 +1,4 @@
-from abb_egm.egm import EGM
+from ABBRobotEGM import EGM
 import numpy as np
 
 # Robot Module #

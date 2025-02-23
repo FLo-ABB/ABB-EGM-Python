@@ -1,4 +1,4 @@
-from abb_egm.egm import EGM
+from ABBRobotEGM import EGM
 import matplotlib.pyplot as plt
 import numpy as np
 import time
