@@ -1,0 +1,55 @@
+name: Continuous Deployment and push to PyPI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.1.7
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5.1.0
+      with:
+        python-version: 3.12
+
+    - name: Install requirements
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r src/requirements.txt
+
+    - name: Create Tag
+      shell: bash
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
+        NEW_TAG=$(echo $TAG | awk -F. -v OFS=. '{$NF++; print}')
+        git tag -a $NEW_TAG -m "Release version $NEW_TAG"
+        sed -i "s/version='.*',/version='${NEW_TAG}',/" setup.py
+        git commit -am "Bump version to ${NEW_TAG}"
+        git push origin $NEW_TAG
+        echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2.0.5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: ${{ env.NEW_TAG }}
+        generate_release_notes: true
+
+    - name: Build package
+      run: python -m build
+
+    - name: Publish package
+      uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}

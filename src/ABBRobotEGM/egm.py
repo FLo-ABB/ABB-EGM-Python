@@ -17,7 +17,7 @@ import select
 import numpy as np
 import errno
 from typing import Tuple, NamedTuple, Any, Optional
-from abb_egm._egm_protobuf import egm_pb2
+from ABBRobotEGM._egm_protobuf import egm_pb2
 from .abb_data import Pos, Orientation, Euler, Pose
 
 # Constants
