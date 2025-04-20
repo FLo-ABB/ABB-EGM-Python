@@ -88,7 +88,80 @@ if __name__ == "__main__":
     main()
 ```
 
-### 3. Data Exchange
+### 3. Path Correction
+example_path_correction.py - Apply dynamic path corrections during robot movement:
+```python
+from ABBRobotEGM import EGM
+import numpy as np
+import time
+
+def main() -> None:
+    """
+    Example showing how to apply path corrections during robot movement.
+    This will apply a sinusoidal correction in the Y direction while the robot
+    moves along a straight line in the X direction (using EGMMoveL in RAPID).
+    
+    The sinusoidal pattern:
+    - Amplitude: 5mm
+    - Frequency: 0.7 Hz
+    """
+    with EGM() as egm:
+        print("Waiting for initial message from robot...")
+        while True:
+            success, _ = egm.receive_from_robot(timeout=1.0)
+            if success:
+                print("Connected to robot!")
+                break
+            
+        # Parameters for sinusoidal correction
+        amplitude = 5.0    # mm
+        frequency = 0.7      # Hz
+        t_start = time.time()
+        
+        print("Sending Y-axis path corrections...")
+        while True:
+            success, _ = egm.receive_from_robot(timeout=0.1)
+            if not success:
+                print("Lost connection to robot")
+                break
+                
+            # Calculate Y correction using sine wave
+            t = time.time() - t_start
+            y_correction = amplitude * np.sin(2 * np.pi * frequency * t)
+            
+            # Create correction vector [x, y, z]
+            correction = np.array([0.0, y_correction, 0.0])
+            
+            # Send path correction
+            egm.send_to_robot_path_corr(correction, age=1)
+            
+            # Match robot's sensor refresh rate of 48ms
+            time.sleep(0.048)
+
+if __name__ == "__main__":
+    main()
+```
+
+RAPID code that should be running on the robot:
+```rapid
+MODULE MainModule
+    VAR egmident egmID1;
+    
+    PROC main()
+        EGMReset egmID1;
+        EGMGetId egmID1;
+        EGMSetupUC ROB_1,egmId1,"EGMPathCorr","UCdevice"\PathCorr\APTR;
+        EGMActMove EGMid1,MyTool.tframe\SampleRate:=48;
+        MoveL StartPos,vmax,fine,MyTool\WObj:=WObj0;
+        ! Move in X direction while Python applies Y corrections
+        EGMMoveL egmID1,Offs(StartPos,400,0,0),v100,fine,MyTool\WObj:=WObj0;
+        MoveL StartPos,vmax,fine,MyTool\WObj:=WObj0;
+        EGMStop egmID1,EGM_STOP_HOLD;
+    ENDPROC
+ENDMODULE
+```
+
+### 4. Data Exchange
 example_table.py - Demonstrates exchanging data arrays with the robot
 
 ## Complex Scenario
