@@ -466,34 +466,49 @@ class EGM:
 
     def send_to_robot_path_corr(self, pos: np.ndarray, age: float = 1) -> bool:
         """
-        Send a path correction command. Returns False if no data has been received from the robot yet. The path
-        correction is a displacement [x,y,z] in millimeters in **path coordinates**. The displacement uses
-        "path coordinates", which relate the direction of movement of the end effector. See `CorrConn` command in
-        *Technical reference manual RAPID Instructions, Functions and Data types* for a detailed description of path
-        coordinates.  The EGM operation must have been started with EGMActMove, and use EGMMoveL and EGMMoveC commands.
+        Send a path correction command to the robot. The path correction is a displacement [x,y,z]
+        in millimeters in path coordinates. Path coordinates relate to the direction of movement
+        of the end effector.
+
+        The EGM operation must have been started with EGMActMove, and use EGMMoveL or EGMMoveC commands.
+        See CorrConn command in Technical reference manual for details about path coordinates.
 
         :param pos: The displacement in path coordinates in millimeters [x,y,z]
+        :param age: Age of the correction in seconds (must be positive). Defaults to 1
         :return: True if successful, False if no data received from robot yet
+        :raises ValueError: If pos is not a 3-element array or age is not positive
         """
-        self.send_sequence_number += 1
-        sensor_message = self._create_sensor_message_path_corr(pos, age)
-        return self._send_message(sensor_message)
+        if not self.egm_addr:
+            return False
 
-    def _create_sensor_message_path_corr(self, pos: np.ndarray, age: float) -> Any:
-        """Create the sensor message with path correction data to be sent to the robot."""
+        # Input validation
+        try:
+            pos = np.asarray(pos, dtype=np.float64).flatten()
+            if pos.size != 3:
+                raise ValueError("pos must be a 3-element array [x,y,z]")
+        except (ValueError, TypeError):
+            raise ValueError("pos must be convertible to a numpy array")
+
+        if age <= 0:
+            raise ValueError("age must be positive")
+
+        # Create path correction message
         sensor_message = egm_pb2.EgmSensorPathCorr()
+
+        # Set header with path correction message type
         header = sensor_message.header
         header.mtype = egm_pb2.EgmHeader.MessageType.Value('MSGTYPE_PATH_CORRECTION')
         header.seqno = self.send_sequence_number
         self.send_sequence_number += 1
 
+        # Set path correction data
         path_corr = sensor_message.pathCorr
-        path_corr.pos.x = pos[0]
-        path_corr.pos.y = pos[1]
-        path_corr.pos.z = pos[2]
-        path_corr.age = age
+        path_corr.pos.x = float(pos[0])
+        path_corr.pos.y = float(pos[1])
+        path_corr.pos.z = float(pos[2])
+        path_corr.age = int(age)  # Protocol expects unsigned integer
 
-        return sensor_message
+        return self._send_message(sensor_message)
 
     def _get_timestamps(self, robot_message: Any) -> Tuple[Optional[EGMClock], Optional[EGMTimeStamp]]:
         clock = None
