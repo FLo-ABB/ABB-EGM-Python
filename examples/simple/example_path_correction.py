@@ -30,8 +30,8 @@ def main() -> None:
     moves along a straight line in the X direction (using EGMMoveL in RAPID).
 
     The sinusoidal pattern:
-    - Amplitude: 100mm
-    - Frequency: 2.0 Hz
+    - Amplitude: 5mm
+    - Frequency: 0.7 Hz
 
     This creates a wavy pattern perpendicular to the robot's movement direction. Run the python script before
     running the RAPID program on the robot.
@@ -45,8 +45,8 @@ def main() -> None:
                 print("Connected to robot!")
                 break
         # Parameters for sinusoidal correction
-        amplitude = 100.0    # mm
-        frequency = 2.0      # Hz
+        amplitude = 5.0    # mm
+        frequency = 0.7      # Hz
         t_start = time.time()
         print("Sending Y-axis path corrections...")
 
