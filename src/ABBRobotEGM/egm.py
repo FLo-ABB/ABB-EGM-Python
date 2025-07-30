@@ -409,13 +409,25 @@ class EGM:
                            external_joints: np.array = None, external_joints_speed: np.array = None,
                            rapid_to_robot: np.array = None, digital_signal_to_robot: bool = None) -> bool:
         """
-        Send a cartesian command to robot. Returns False if no data has been received from the robot yet. The pose
-        is relative to the tool, workobject, and frame specified when the EGM operation is initialized. The EGM
-        operation must have been started with EGMActPose and EGMRunPose.
+        Send a cartesian command with optional speed reference to robot.
+
+        Returns False if no data has been received from the robot yet. The pose
+        is relative to the tool, workobject, and frame specified when the EGM operation is initialized.
+        The EGM operation must have been started with EGMActPose and EGMRunPose.
 
         :param pos: The position of the TCP in millimeters [x,y,z]
         :param orient: The orientation of the TCP in quaternions [w,x,y,z]
+        :param speed_ref: Cartesian speed reference as a 3-element array:
+                         - 3-element: [vx,vy,vz] Linear velocities in mm/s along x,y,z axes
+        :param external_joints: External joints positions (optional)
+        :param external_joints_speed: External joints speed reference (optional)
+        :param rapid_to_robot: RAPID data to send to robot (optional)
         :return: True if successful, False if no data received from robot yet
+
+        Example:
+            # Move with specific linear speed in Z direction (10 mm/s) and small rotation around Z (0.1 rad/s)
+            speed_ref = np.array([0.0, 0.0, 10.0, 0.0, 0.0, 0.1])
+            egm.send_to_robot_cart(position, orientation, speed_ref)
         """
         if not self.egm_addr:
             return False
@@ -424,6 +436,18 @@ class EGM:
         sensor_message = self._create_sensor_message_cart(pos, orient, speed_ref, external_joints,
                                                           external_joints_speed, rapid_to_robot, digital_signal_to_robot)
         return self._send_message(sensor_message)
+
+    @staticmethod
+    def create_linear_speed_ref(vx: float = 0.0, vy: float = 0.0, vz: float = 0.0) -> np.ndarray:
+        """
+        Create a speed reference for pure linear motion.
+
+        :param vx: Linear velocity in X direction (mm/s)
+        :param vy: Linear velocity in Y direction (mm/s)
+        :param vz: Linear velocity in Z direction (mm/s)
+        :return: 3-element speed reference array [vx, vy, vz]
+        """
+        return np.array([vx, vy, vz])
 
     def _create_sensor_message_cart(self, pos: np.ndarray, orient: np.ndarray, speed_ref: np.array,
                                     external_joints: np.array, external_joints_speed: np.array,
@@ -448,7 +472,19 @@ class EGM:
             planned.cartesian.orient.u3 = orient[3]
 
         if speed_ref is not None:
-            speed_ref_message.cartesians.value.extend(list(np.array(speed_ref)))
+            # ABB EGM expects only linear velocities (vx, vy, vz) in cartesians.value
+            # Angular velocities (wx, wy, wz) are not supported in current protobuf definition
+            if len(speed_ref) >= 3:
+                linear_velocities = speed_ref[:3]  # Extract only vx, vy, vz
+                speed_ref_message.cartesians.value.extend(list(np.array(linear_velocities)))
+
+                # Note: Angular velocities (wx, wy, wz) are currently not supported
+                # This is a limitation of the ABB EGM protocol as defined in the protobuf
+                if len(speed_ref) > 3 and any(speed_ref[3:] != 0):
+                    print("Warning: Angular velocities (wx, wy, wz) are not supported by ABB EGM protocol")
+                    print("Only linear velocities (vx, vy, vz) will be used")
+            else:
+                speed_ref_message.cartesians.value.extend(list(np.array(speed_ref)))
 
         if external_joints is not None:
             planned.externalJoints.joints.extend(list(np.array(external_joints)))
