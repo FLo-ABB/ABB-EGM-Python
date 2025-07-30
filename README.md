@@ -38,6 +38,9 @@ example_joint_guidance.py - Makes the first joint oscillate between -45° and +4
 #### 2. Cartesian
 example_pose_guidance.py - Makes the robot move in a circular pattern
 
+#### 3. Speed Control
+example_speed_guidance.py - Demonstrates how to control the robot movement with speed references.
+
 ### Streaming Mode
 
 #### 1. Joint Streaming

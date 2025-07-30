@@ -438,16 +438,19 @@ class EGM:
         return self._send_message(sensor_message)
 
     @staticmethod
-    def create_linear_speed_ref(vx: float = 0.0, vy: float = 0.0, vz: float = 0.0) -> np.ndarray:
+    def create_combined_speed_ref(vx: float = 0.0, vy: float = 0.0, vz: float = 0.0, wx: float = 0.0, wy: float = 0.0, wz: float = 0.0) -> np.ndarray:
         """
         Create a speed reference for pure linear motion.
 
         :param vx: Linear velocity in X direction (mm/s)
         :param vy: Linear velocity in Y direction (mm/s)
         :param vz: Linear velocity in Z direction (mm/s)
-        :return: 3-element speed reference array [vx, vy, vz]
+        :param wx: Angular velocity around X axis (deg/s)
+        :param wy: Angular velocity around Y axis (deg/s)
+        :param wz: Angular velocity around Z axis (deg/s)
+        :return: 6-element speed reference array [vx, vy, vz, wx, wy, wz]
         """
-        return np.array([vx, vy, vz])
+        return np.array([vx, vy, vz, wx, wy, wz])
 
     def _create_sensor_message_cart(self, pos: np.ndarray, orient: np.ndarray, speed_ref: np.array,
                                     external_joints: np.array, external_joints_speed: np.array,
@@ -472,19 +475,7 @@ class EGM:
             planned.cartesian.orient.u3 = orient[3]
 
         if speed_ref is not None:
-            # ABB EGM expects only linear velocities (vx, vy, vz) in cartesians.value
-            # Angular velocities (wx, wy, wz) are not supported in current protobuf definition
-            if len(speed_ref) >= 3:
-                linear_velocities = speed_ref[:3]  # Extract only vx, vy, vz
-                speed_ref_message.cartesians.value.extend(list(np.array(linear_velocities)))
-
-                # Note: Angular velocities (wx, wy, wz) are currently not supported
-                # This is a limitation of the ABB EGM protocol as defined in the protobuf
-                if len(speed_ref) > 3 and any(speed_ref[3:] != 0):
-                    print("Warning: Angular velocities (wx, wy, wz) are not supported by ABB EGM protocol")
-                    print("Only linear velocities (vx, vy, vz) will be used")
-            else:
-                speed_ref_message.cartesians.value.extend(list(np.array(speed_ref)))
+            speed_ref_message.cartesians.value.extend(list(np.array(speed_ref)))
 
         if external_joints is not None:
             planned.externalJoints.joints.extend(list(np.array(external_joints)))
