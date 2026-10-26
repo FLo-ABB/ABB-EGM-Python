@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='ABBRobotEGM',
-    version='1.0.0',
+    version='v1.0.6',
     description='A Python library for real-time control and data streaming of ABB robots using EGM protocol, enabling high-frequency (250Hz) communication through UDP for industrial automation applications.',
     long_description=open('README.md', encoding='utf-8').read(),
     long_description_content_type='text/markdown',
