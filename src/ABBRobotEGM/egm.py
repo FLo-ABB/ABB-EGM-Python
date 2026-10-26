@@ -143,6 +143,33 @@ class EGM:
         state = self._parse_robot_message(robot_message)
         return True, state
 
+    def receive_latest(self, timeout: float = TIMEOUT) -> Tuple[bool, Optional[EGMRobotState], int]:
+        """
+        Receive the most recent feedback from the robot, discarding older queued packets.
+
+        If the control loop has been slower than the robot's update rate, several packets
+        may be waiting in the socket buffer. ``receive_from_robot`` would return the oldest
+        of them. This method waits up to ``timeout`` for a first packet, then reads every
+        packet already queued and returns only the newest one.
+
+        Use ``receive_from_robot`` when every packet is needed, for example for logging.
+
+        :param timeout: Timeout in seconds for the first packet. May be zero.
+        :return: Success, the latest robot state, and the number of discarded older packets
+        """
+        success, state = self.receive_from_robot(timeout)
+        if not success:
+            return False, None, 0
+
+        skipped = 0
+        while True:
+            ok, newer = self.receive_from_robot(timeout=0.0)
+            if not ok:
+                break
+            state = newer
+            skipped += 1
+        return True, state, skipped
+
     def _parse_robot_message(self, robot_message: Any) -> EGMRobotState:
         """Parse the robot message and return the robot state."""
         # Get header information
