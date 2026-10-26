@@ -91,6 +91,17 @@ if __name__ == "__main__":
     main()
 ```
 
+#### Reading only the latest state
+In a control loop, use `receive_latest()` instead of `receive_from_robot()`. If your loop was
+slower than 4 ms, older packets may be queued; `receive_latest()` discards them and returns the
+newest state together with how many packets were skipped:
+
+```python
+success, state, skipped = egm.receive_latest(timeout=0.1)
+if skipped:
+    print(f"Loop fell behind, skipped {skipped} packets")
+```
+
 ### 3. Path Correction
 example_path_correction.py - Apply dynamic path corrections during robot movement:
 ```python
