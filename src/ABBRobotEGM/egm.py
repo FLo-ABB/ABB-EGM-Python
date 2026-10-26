@@ -335,8 +335,6 @@ class EGM:
         # if joint_angles is None and cartesian is None:
         #     raise ValueError("Either joint_angles or cartesian must be provided")
 
-        self.send_sequence_number += 1
-
         if cartesian is not None:
             # If cartesian is provided, use cartesian control
             pos, orient = cartesian
@@ -432,7 +430,6 @@ class EGM:
         if not self.egm_addr:
             return False
 
-        self.send_sequence_number += 1
         sensor_message = self._create_sensor_message_cart(pos, orient, speed_ref, external_joints,
                                                           external_joints_speed, rapid_to_robot, digital_signal_to_robot)
         return self._send_message(sensor_message)
