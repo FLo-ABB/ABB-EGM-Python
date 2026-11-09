@@ -95,6 +95,9 @@ class EGM:
     packets from.
 
     :param port: The port to receive UDP packets. Defaults to 6510
+
+    ``lost_packets`` counts feedback messages that never arrived, detected from gaps in the
+    robot's sequence numbers.
     """
 
     def __init__(self, port: int = DEFAULT_PORT):
@@ -103,6 +106,8 @@ class EGM:
         self.send_sequence_number = 0
         self.egm_addr = None
         self.count = 0
+        self.lost_packets = 0
+        self._last_robot_seqno = None
 
     def __enter__(self):
         """Enter the context manager protocol."""
@@ -139,6 +144,7 @@ class EGM:
         self.egm_addr = addr
         robot_message = egm_pb2.EgmRobot()
         robot_message.ParseFromString(buf)
+        self._count_lost_packets(robot_message)
 
         state = self._parse_robot_message(robot_message)
         return True, state
@@ -169,6 +175,17 @@ class EGM:
             state = newer
             skipped += 1
         return True, state, skipped
+
+    def _count_lost_packets(self, robot_message: Any) -> None:
+        """Count gaps in the robot's sequence numbers as lost packets."""
+        if not robot_message.HasField('header'):
+            return
+        seqno = robot_message.header.seqno
+        last = self._last_robot_seqno
+        if last is not None and seqno > last + 1:
+            self.lost_packets += seqno - last - 1
+        # A lower or equal number means a new EGM session or a restarted counter: start over from here
+        self._last_robot_seqno = seqno
 
     def _parse_robot_message(self, robot_message: Any) -> EGMRobotState:
         """Parse the robot message and return the robot state."""
